@@ -5,7 +5,7 @@ from tqdm import tqdm
 import csv
 import os
 
-def train_model(model, train_loader, val_loader, num_epochs=20, lr=0.001, device='cpu', metrics_file='metrics.csv'):
+def train_model(model, train_loader, val_loader, num_epochs=20, lr=0.001, device='cpu', metrics_file='metrics.csv', weights_path='best_model.pth'):
     model.to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=1e-4)
@@ -79,7 +79,7 @@ def train_model(model, train_loader, val_loader, num_epochs=20, lr=0.001, device
         # Save best model
         if val_epoch_acc > best_val_acc:
             best_val_acc = val_epoch_acc
-            torch.save(model.state_dict(), "best_model.pth")
+            torch.save(model.state_dict(), weights_path)
             print("✅ Best model saved")
 
     print(f"\nTraining complete. Best val accuracy: {best_val_acc:.4f}")

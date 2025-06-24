@@ -1,18 +1,20 @@
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
-import os
-import numpy as np
 import torch
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 from sklearn.metrics import classification_report, confusion_matrix, f1_score, precision_score, recall_score
 
-def get_test_loader():
+def get_test_loader(num_channels = 1):
     """Get the test DataLoader."""
     # Define the transformation to apply to each image
     transform = transforms.Compose([
-        transforms.Grayscale(),        
+        transforms.Grayscale(num_output_channels=num_channels),  # Convert to grayscale   
         transforms.Resize((224, 224)),   
         transforms.ToTensor(),
-        transforms.Normalize((0.5,), (0.5,))
+        transforms.Normalize((0.5, ), (0.5,))
     ])
 
     test_dataset = datasets.ImageFolder(root="test", transform=transform)
@@ -21,9 +23,10 @@ def get_test_loader():
     classes = test_dataset.classes
     return test_loader, classes
 
-def run_inferece(model, device='cpu'):
+
+def run_inferece(model, device='cpu', num_channels=1):
     """Run inference on the test dataset."""
-    test_loader, classes = get_test_loader()
+    test_loader, classes = get_test_loader(num_channels)
     
     all_preds = []
     all_labels = []
@@ -39,13 +42,27 @@ def run_inferece(model, device='cpu'):
             all_preds.extend(preds.cpu().numpy())
             all_labels.extend(labels.cpu().numpy())
 
-    # Evaluation
-    print("Classification Report:")
-    print(classification_report(all_labels, all_preds, target_names=classes))
+    # Evaluation metrics
+    report = classification_report(all_labels, all_preds, target_names=classes)
+    cm = confusion_matrix(all_labels, all_preds)
+    f1 = f1_score(all_labels, all_preds, average='weighted')
+    precision = precision_score(all_labels, all_preds, average='weighted')
+    recall = recall_score(all_labels, all_preds, average='weighted')
 
-    print("\nConfusion Matrix:")
-    print(confusion_matrix(all_labels, all_preds))
+    # Print metrics
+    print("Classification Report:\n", report)
+    print("\nConfusion Matrix:\n", cm)
+    print(f"\nF1 Score: {f1:.4f}")
+    print(f"Precision: {precision:.4f}")
+    print(f"Recall: {recall:.4f}")
 
-    print("\nF1 Score:", f1_score(all_labels, all_preds, average='weighted'))
-    print("Precision:", precision_score(all_labels, all_preds, average='weighted'))
-    print("Recall:", recall_score(all_labels, all_preds, average='weighted'))
+    # Plot and save confusion matrix
+    plt.figure(figsize=(8, 6))
+    cm_df = pd.DataFrame(cm, index=classes, columns=classes)
+    sns.heatmap(cm_df, annot=True, fmt='d', cmap='Blues', cbar=False)
+    plt.title("Confusion Matrix")
+    plt.ylabel("Actual")
+    plt.xlabel("Predicted")
+    plt.tight_layout()
+    plt.savefig("cnn_confusion_matrix.png")  # <-- Save as PNG
+    plt.close()

@@ -92,7 +92,7 @@ def save_stft_grayscale(signal, fs, out_path):
     plt.close()
 
 
-def generate(path="data", samples=50):
+def generate(path="data", samples=50, noise_multiplier=1):
     targets = {
         'Bird Flock': simulate_bird_flock_signal,
         'Drone Swarm': simulate_drone_swarm_signal,
@@ -106,9 +106,8 @@ def generate(path="data", samples=50):
         os.makedirs(class_dir, exist_ok=True)
 
         for i in range(samples):
-            print(f'Generating {label} sample #{i + 1}')
             _, signal = sim_func()
             filename = os.path.join(class_dir, f"{label.replace(' ', '_').lower()}_{i}.png")
             save_stft_grayscale(signal, fs=fs, out_path=filename)
-            os.system('cls' if os.name == 'nt' else 'clear')
+    print(f"Generation complete for {path} set. Spectrograms saved to:", path)
 
