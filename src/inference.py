@@ -24,8 +24,13 @@ def get_test_loader(num_channels = 1):
     return test_loader, classes
 
 
-def run_inferece(model, device='cpu', num_channels=1):
-    """Run inference on the test dataset."""
+def add_gaussian_noise(tensor, mean=0.0, std=0.1, multiplier=1.0):
+    """Add Gaussian noise to a tensor image."""
+    noise = torch.randn_like(tensor) * std * multiplier + mean
+    return torch.clamp(tensor + noise, 0., 1.)
+
+def run_inferece(model, device='cpu', num_channels=1, confusion_matrix_path="out/cnn_confusion_matrix.png", noise_multiplier=0.0):
+    """Run inference on the test dataset with optional Gaussian noise."""
     test_loader, classes = get_test_loader(num_channels)
     
     all_preds = []
@@ -33,6 +38,10 @@ def run_inferece(model, device='cpu', num_channels=1):
 
     with torch.no_grad():
         for inputs, labels in test_loader:
+            # Add Gaussian noise to inputs
+            if noise_multiplier > 0:
+                inputs = add_gaussian_noise(inputs, std=0.1, multiplier=noise_multiplier)
+
             inputs = inputs.to(device)
             labels = labels.to(device)
 
@@ -60,9 +69,9 @@ def run_inferece(model, device='cpu', num_channels=1):
     plt.figure(figsize=(8, 6))
     cm_df = pd.DataFrame(cm, index=classes, columns=classes)
     sns.heatmap(cm_df, annot=True, fmt='d', cmap='Blues', cbar=False)
-    plt.title("Confusion Matrix")
+    plt.title(f"Confusion Matrix (Noise Multiplier: {noise_multiplier})")
     plt.ylabel("Actual")
     plt.xlabel("Predicted")
     plt.tight_layout()
-    plt.savefig("cnn_confusion_matrix.png")  # <-- Save as PNG
+    plt.savefig(confusion_matrix_path)
     plt.close()

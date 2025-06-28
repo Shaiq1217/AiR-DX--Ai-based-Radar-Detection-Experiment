@@ -22,7 +22,7 @@ def simulate_bird_flock_signal(num_birds=30, base_v=20, lam=0.03,
         # Add weak harmonic
         signal += 0.1 * A * np.cos(2 * np.pi * 2 * mod_fd * t + phi)
 
-    noise_level = np.random.uniform(*noise_range)
+    noise_level = np.random.uniform(*noise_range) 
     signal += np.random.normal(0, noise_level, t.shape)
     return t, signal
 
@@ -92,7 +92,7 @@ def save_stft_grayscale(signal, fs, out_path):
     plt.close()
 
 
-def generate(path="data", samples=50, noise_multiplier=1):
+def generate(path="data", samples=50):
     targets = {
         'Bird Flock': simulate_bird_flock_signal,
         'Drone Swarm': simulate_drone_swarm_signal,
