@@ -2,6 +2,7 @@ from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 import torch
 import numpy as np
+import os
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
@@ -29,7 +30,7 @@ def add_gaussian_noise(tensor, mean=0.0, std=0.1, multiplier=1.0):
     noise = torch.randn_like(tensor) * std * multiplier + mean
     return torch.clamp(tensor + noise, 0., 1.)
 
-def run_inferece(model, device='cpu', num_channels=1, confusion_matrix_path="out/cnn_confusion_matrix.png", noise_multiplier=0.0):
+def run_inferece(model, device='cpu', num_channels=1, confusion_matrix_path="out/cnn_confusion_matrix.png", metrics_path = "out/metrics_noise_cnn.csv", noise_multiplier=0.0):
     """Run inference on the test dataset with optional Gaussian noise."""
     test_loader, classes = get_test_loader(num_channels)
     
@@ -64,6 +65,16 @@ def run_inferece(model, device='cpu', num_channels=1, confusion_matrix_path="out
     print(f"\nF1 Score: {f1:.4f}")
     print(f"Precision: {precision:.4f}")
     print(f"Recall: {recall:.4f}")
+
+    # Write metrics to a csv file with noise multiplier
+    metrics = {
+        "Noise Multiplier": [noise_multiplier],
+        "F1 Score": [f1],
+        "Precision": [precision],
+        "Recall": [recall]
+    }
+    metrics_df = pd.DataFrame(metrics)
+    metrics_df.to_csv(metrics_path, index=False, mode='a', header=not os.path.exists(metrics_path))
 
     # Plot and save confusion matrix
     plt.figure(figsize=(8, 6))
