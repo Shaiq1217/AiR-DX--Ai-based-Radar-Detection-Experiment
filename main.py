@@ -34,10 +34,11 @@ def inference(num_samples = 50):
     model_cnn_test.to(device)
     model_cnn_test.eval()
     # Run inference and print metrics
-    for multiplier in [0.0, 0.25, 0.5, 1.0]:
+    for multiplier in [0.0, 1.0, 1.2, 1.4, 1.5]:
         print(f"\n--- Running inference with noise multiplier: {multiplier} ---")
-        run_inferece(model_cnn_test, device='cuda', noise_multiplier=multiplier,
-                    confusion_matrix_path=f"out/confusion_matrix_noise_{multiplier}.png")
+        run_inferece(model_cnn_test, device=device, noise_multiplier=multiplier,
+                    confusion_matrix_path=f"out/cnn_confusion_matrix_noise_{multiplier}.png",
+                    metrics_path="out/cnn_metrics_noise.csv")
 
 
     # Load resnet model architecture
@@ -48,10 +49,10 @@ def inference(num_samples = 50):
     model_resnet_test.to(device)
     model_resnet_test.eval()
     # Run inference and print metrics
-    for multiplier in [0.0, 0.25, 0.5, 1.0]:
+    for multiplier in [0.0, 1.0, 1.2, 1.4, 1.5]:
         print(f"\n--- Running inference with noise multiplier: {multiplier} ---")
-        run_inferece(model_resnet_test, device='cuda', noise_multiplier=multiplier,
-                    confusion_matrix_path=f"out/confusion_matrix_noise_{multiplier}.png")
+        run_inferece(model_resnet_test, device=device, noise_multiplier=multiplier,
+                    confusion_matrix_path=f"out/resnet_confusion_matrix_noise_{multiplier}.png", metrics_path="out/resnet_metrics_noise.csv", num_channels=3)
 
 
 
