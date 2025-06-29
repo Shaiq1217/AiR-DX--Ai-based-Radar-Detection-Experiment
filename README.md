@@ -9,12 +9,23 @@ This project aims to deliver high-accuracy classification under varying noise le
 
 ⚡ <strong>TL;DR</strong>: A lightweight custom CNN model that classifies radar Doppler spectrograms into bird flocks, drone swarms, and stealth UAVs. It outperforms ResNet under noisy conditions and offers interpretability via Grad-CAM. Designed for real-time and edge deployment scenarios.
 
+
+### Features <a name="features"></a>
+The project includes the following features to achieve the desired results:
+- 🔊 Synthetic Doppler spectrogram generation for simulated dataset
+- ✅ Simple yet effective custom CNN architecture (only 4 convolutional layers!)
+- 📈 High accuracy and robustness under noisy conditions
+- 🔍 Evaluation metrics including confusion matrix, F1, precision, recall
+- 🧪 ResNet baseline included for comparison
+- 🔥 Grad-CAM visualization for interpretability to understand where the CNN "looks"
+- 📦 Exportable as pre-trained `.pth` model for deployment
+
+
 ---
 
 ### Table of Contents
 - [💡 Motivation](#motivation)
 - [👋 Introduction](#introduction)
-- [⚙️ Features](#features)
 - [🧪 Experimental Setup](#experimental-setup)
 - [📊 Results](#results)
 - [🔍 Explainability](#explainability)
@@ -42,25 +53,15 @@ This effect can be observed using a Doppler spectrogram, which is a diagram with
 <!-->TODO: Add an example of singal to Doppler spectrogram<!--->
 
 This project aims to treat these Doppler spectrograms as images to classify radar targets even in noisy environments. The simulated Doppler signatures are divided into three classes: Bird flocks, Drone swarms and Stealth UAVs. These classes are chosen carefully:
- - 🐦 Bird flocks are very abundant in radar signal returns and large flocks moving at similar speeds are easily recognizable in Doppler spectrograms. The flapping of wings can modulate the Doppler return, creating periodic micro-Doppler components.
- - 🛸 Drone swarms often have multiple independently moving elements, each generating distinct Doppler returns. 
- - ✈️ Stealth UAVs are chosen and show up in spectrograms with very low signal strength. Stealth UAVs have geometries and materials that reduce RCS, making radar returns weak and often buried in noise.  
+ -  Bird flocks are very abundant in radar signal returns and large flocks moving at similar speeds are easily recognizable in Doppler spectrograms. The flapping of wings can modulate the Doppler return, creating periodic micro-Doppler components.
+ -  Drone swarms often have multiple independently moving elements, each generating distinct Doppler returns. 
+ -  Stealth UAVs are chosen and show up in spectrograms with very low signal strength. Stealth UAVs have geometries and materials that reduce RCS, making radar returns weak and often buried in noise.  
 
 This project uses a custom CNN architecture to classify these spectrograms, achieving high accuracy and F1 score. The model is designed to be lightweight and robust. The CNN architecture is small in size and has only ~6M params (compared to Resnet18's ~12M). 
 
 The model is then tested against various noise levels to ensure it can handle real-world conditions. The model was tested against noise levels by adding gaussian noise.The results show that the model maintains high accuracy even with significant noise, making it suitable for deployment in noisy environments.
 
 The project also includes Grad-CAM visualization to interpret the model's decisions, helping to understand which parts of the spectrograms are most influential for classification. This is crucial for building trust in AI systems, especially in safety-critical applications like radar detection.
-
-### Features <a name="features"></a>
-The project includes the following features to achieve the desired results:
-- 🔊 Synthetic Doppler spectrogram generation for simulated dataset
-- ✅ Simple yet effective custom CNN architecture (only 4 convolutional layers!)
-- 📈 High accuracy and robustness under noisy conditions
-- 🔍 Evaluation metrics including confusion matrix, F1, precision, recall
-- 🧪 ResNet baseline included for comparison
-- 🔥 Grad-CAM visualization for interpretability to understand where the CNN "looks"
-- 📦 Exportable as pre-trained `.pth` model for deployment
 
 
 ### Experimental Setup 
@@ -70,7 +71,7 @@ The project was tested using a synthetic dataset of Doppler spectrograms generat
 The model architecture consists of four convolutional layers, each followed by ReLU activation. The final layer is a fully connected layer that outputs the class probabilities. The model was designed to be lightweight, with only ~6 million parameters and is only ~7MB in size making it a strong candidate for deployment on edge devices. The model architecture is shown below:
 
 
-<figure>
+<figure align="center">
   <img src="out/model-arch/nn.svg" alt="CNN model architecture">
   <figcaption><strong>Figure 1:</strong> CNN Model architecture</figcaption>
 </figure>
@@ -81,13 +82,13 @@ Each simulated spectrogram had varying frequency and amplitude characteristics t
 The following figure shows the training and validation accuracy over epochs, demonstrating the model's learning curve.
 
 
-<figure>
+<figure align="center">
   <img src="out/cnn_training_metrics.png" alt="CNN model loss and accuracy vs epochs" width="600">
   <figcaption><strong>Figure 2:</strong> Model Accuracy vs Epochs for CNN Classifier</figcaption>
 </figure>
 
 A baseline Resnet (resnet-18) was also trained to compare the results relative to the trained CNN.
-<figure>
+<figure align="center">
   <img src="out/resnet_training_metrics.png" alt="Resnet model loss and accuracy vs epochs" width="600">
   <figcaption><strong>Figure 3:</strong> Model Accuracy vs Epochs for Resnet18 Classifier</figcaption>
 </figure>
@@ -101,13 +102,13 @@ To visualize and interpret the model's decisions, Grad-CAM was used to generate 
 ### Results 
 
 The custom CNN model achieved  an F1 score of 0.986, precision of 0.987, and recall of 0.987. The confusion matrix below shows the model's performance across different classes, indicating that the model is highly effective at distinguishing between bird flocks, drone swarms, and stealth UAVs.
-<figure>
+<figure align="center">
   <img src="out/cnn_confusion_matrix.png" alt="Confusion matrix for CNN classifier" width="600">
   <figcaption><strong>Figure 4:</strong> CNN classifier metrics vs Noise Level</figcaption>
 </figure
 
 The Resnet model achieved an F1 score of 0.814, precision of 0.866, and recall of 0.820. The confusion matrix below shows the model's performance across different classes, indicating that the model is relatively less effective at distinguishing between bird flocks and other classes (i.e. drone swarms, and stealth UAVs).
-<figure>
+<figure align="center">
   <img src="out/resnet_confusion_matrix.png" alt="Confusion matrix for CNN classifier" width="600">
   <figcaption><strong>Figure 5:</strong> Resnet classifier metrics vs Noise Level</figcaption>
 </figure
@@ -116,12 +117,12 @@ The Resnet model achieved an F1 score of 0.814, precision of 0.866, and recall o
 Thus, the deduction from this finding is that the custom CNN model outperforms the Resnet baseline in terms of F1 score, precision, and recall. The custom CNN is more effective at distinguishing between the three classes, especially under noisy conditions. A potential reason for this could be the custom architecture's ability to focus on relevant features in the spectrograms, while the Resnet model may have been too complex for the dataset, leading to overfitting. This is also apparent from the high validation accuracy and low F1 score. 
 
 Both models were then tested with noisy parameters with a newly generated test set. The loss in accuracy over the increase in the noise is shown in the figure below.
-<figure>
+<figure align="center">
   <img src="out/cnn_metrics_plot.png" alt="Model accuracy vs noise level" width="600">
   <figcaption><strong>Figure 6:</strong> CNN classifier metrics vs Noise Level</figcaption>
 </figure>
 
-<figure>
+<figure align="center">
   <img src="out/resnet_metrics_plot.png" alt="Model accuracy vs noise level" width="600">
   <figcaption><strong>Figure 7:</strong> Resnet 18 metrics vs Noise Level</figcaption>
 </figure>
@@ -181,5 +182,12 @@ At the root of the project, you will find the following directories and files:
   - `utils.py`: Utility functions for metrics and visualization.
   - `inference.py`: Script for running inference on new data.
 
-### Future Ideas <a name="future-work"></a>
+### Future Ideas 
+This project is a starting point for building more robust radar detection systems. Here are some ideas for future work:
+  - Pruning and quantization of the model to reduce size and improve inference speed on edge devices.
+  - Expanding the problem to a multi-class multi-label classification where a single spectrogram can have multiple classes (e.g. bird flock and drone swarm).
+  - Applying similar approaches to other signal processing tasks, such as CIR in wireless communication or audio classification.
 
+### Reach Out 
+If you have any questions, suggestions, or feedback, feel free to reach out:
+<a href="mail">
