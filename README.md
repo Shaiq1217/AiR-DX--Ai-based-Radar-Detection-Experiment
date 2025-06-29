@@ -70,11 +70,9 @@ The project was tested using a synthetic dataset of Doppler spectrograms generat
 
 The model architecture consists of four convolutional layers, each followed by ReLU activation. The final layer is a fully connected layer that outputs the class probabilities. The model was designed to be lightweight, with only ~6 million parameters and is only ~7MB in size making it a strong candidate for deployment on edge devices. The model architecture is shown below:
 
+![CNN model architecture](out/model-arch/nn.svg){ width="800" height="600" style="display: block; margin: 0 auto" }
+<p align = "center"><b>Figure 1:</b> CNN model architecture</p>
 
-<p align = "center" width="100%">
-    <img src="out/model-arch/nn.svg" alt="CNN model architecture">
-    <figcaption align="center"><strong>Figure 1:</strong> CNN Model architecture</figcaption>
-</p>
 Each simulated spectrogram had varying frequency and amplitude characteristics to mimic real-world radar returns. The model was trained for 15 epochs with a batch size of 8, using the Adam optimizer and a learning rate of 0.001. The training process included data augmentation techniques that are relevant to Doppler spectrograms, such as random rotation and flipping, to improve the model's robustness. The input image size was `224 x 224`.
 
 The following figure shows the training and validation accuracy over epochs, demonstrating the model's learning curve.
