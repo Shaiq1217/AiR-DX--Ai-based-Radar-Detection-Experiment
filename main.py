@@ -9,6 +9,9 @@ from torchsummary import summary
 import matplotlib.pyplot as plt
 from glob import glob
 import os
+import matplotlib.pyplot as plt
+import pandas as pd
+from io import StringIO
 
 def training_loop():
     # Generate simulated spectrograms 
@@ -25,9 +28,9 @@ def training_loop():
     model_resnet_train = ResnetModel(num_classes=len(class_names))
     train_model(model_resnet_train, train_loader, val_loader, num_epochs=15, metrics_file="resnet_metrics.csv", weights_path="resnet_weights.pth")
 
-def inference(num_samples = 50):
+def inference(num_samples = 50, out_dir="test", noise_mult = [0.0, 1.0, 1.2, 1.4, 1.5]):
      # create test set spectrograms
-    generate(path = "test", samples=num_samples)
+    generate(path = out_dir, samples=num_samples)
 
     # Load cnn model architecture
     print("Running inference on CNN model...")
@@ -37,7 +40,7 @@ def inference(num_samples = 50):
     model_cnn_test.to(device)
     model_cnn_test.eval()
     # Run inference and print metrics
-    for multiplier in [0.0, 1.0, 1.2, 1.4, 1.5]:
+    for multiplier in noise_mult:
         print(f"\n--- Running inference with noise multiplier: {multiplier} ---")
         run_inferece(model_cnn_test, device=device, noise_multiplier=multiplier,
                     confusion_matrix_path=f"out/cnn_confusion_matrix_noise_{multiplier}.png",
@@ -52,7 +55,7 @@ def inference(num_samples = 50):
     model_resnet_test.to(device)
     model_resnet_test.eval()
     # Run inference and print metrics
-    for multiplier in [0.0, 1.0, 1.2, 1.4, 1.5]:
+    for multiplier in noise_mult:
         print(f"\n--- Running inference with noise multiplier: {multiplier} ---")
         run_inferece(model_resnet_test, device=device, noise_multiplier=multiplier,
                     confusion_matrix_path=f"out/resnet_confusion_matrix_noise_{multiplier}.png", metrics_path="out/resnet_metrics_noise.csv", num_channels=3)
@@ -77,4 +80,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
