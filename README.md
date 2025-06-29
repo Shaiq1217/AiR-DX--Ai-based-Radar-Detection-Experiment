@@ -44,13 +44,15 @@ In short: this work combines signal processing intuition with machine learning t
 
 ### Introduction 
 
-Doppler effect refers to the change in frequency from the source to a relative destination. In the context of radar signals, the Doppler effect allows the radar to realize how different parts of a target object is moving. This could be wing flaps from birds or rotor hums from drone. 
+Doppler effect refers to the change in frequency from the source to a relative destination. In the context of radar signals, the Doppler effect allows the radar to realize how different parts of a target object are moving. This could be wing flaps from birds or rotor hums from drones. 
 
 This effect can be observed using a Doppler spectrogram, which is a diagram with:
 - `x-axis`: representing time
 - `y-axis`: representing the frequency or the Doppler shift. 
 - `color`: representing the amplitude of the signal at that frequency and time.
-<!-->TODO: Add an example of singal to Doppler spectrogram<!--->
+
+![Example Spectrogram](out/example_spectrogram.png)
+<p align="center"> <b>Figure 1:</b> Example of a spectrogram shownig a single strong frequency band </p>
 
 This project aims to treat these Doppler spectrograms as images to classify radar targets even in noisy environments. The simulated Doppler signatures are divided into three classes: Bird flocks, Drone swarms and Stealth UAVs. These classes are chosen carefully:
  -  Bird flocks are very abundant in radar signal returns and large flocks moving at similar speeds are easily recognizable in Doppler spectrograms. The flapping of wings can modulate the Doppler return, creating periodic micro-Doppler components.
@@ -66,24 +68,25 @@ The project also includes Grad-CAM visualization to interpret the model's decisi
 
 ### Experimental Setup 
 
-The project was tested using a synthetic dataset of Doppler spectrograms generated from simulated radar signals. 400 samples were generated for each class so that the model has enough visibility of the different classes. The dataset was split into training, validation, and test sets with a 80-20 ratio. The model was trained using the training set and evaluated on the validation set. The model with the highest validation accuracy was saved.
+The project was tested using a synthetic dataset of Doppler spectrograms generated from simulated radar signals. 1200 samples were generated for each class so that the model has enough visibility of the different classes. To generate the simulated dataset physics-inspired python scripts were used. A `λ` of 0.03m was utilized to simulate the X-band in a signal. The Doppler shift `f_d = (2 * v) / λ` is calculated from its velocity and amplitutde and phase variations are introduced to add natural randomness. Since, radar systems work in noise-prone environments some white gaussian noise is already introduced in the signal to mimic environmental effects. For bird flocks a second weak harmonic is added to simulate the wing flapping, whereas for drone swarms multiple different frequencies are utilized to mimic drones moving at different speeds. To mimic stealth UAVs a weak signal is simulated with low amplitude, since radar returns from stealth UAVs is often buried in noise. Finally, <b>Short Time Fourier Transform (STFT)</b> is used to generate the spectrogram. To make the problem simpler for the model, the spectrograms are saved as grayscale images which retains all of the information necessary but reduces the input channels.
+
+The input image size was `224 x 224`. The shape for the input image was `1 x 244 x 244`. The dataset was split into training, validation, and test sets with a 80-20 ratio. The model was trained using the training set and evaluated on the validation set. The model with the highest validation accuracy was saved. It was trained for 15 epochs with a batch size of 8, using the Adam optimizer and a learning rate of 0.001. The training process also included data augmentation techniques that are relevant to Doppler spectrograms, such as random rotation and flipping, to improve the model's robustness. 
 
 The model architecture consists of four convolutional layers, each followed by ReLU activation. The final layer is a fully connected layer that outputs the class probabilities. The model was designed to be lightweight, with only ~6 million parameters and is only ~7MB in size making it a strong candidate for deployment on edge devices. The model architecture is shown below:
 
 ![CNN model architecture](out/model-arch/arch.svg)
-<p align = "center"><b>Figure 1:</b> CNN model architecture</p>
+<p align = "center"><b>Figure 2:</b> CNN model architecture</p>
 
-Each simulated spectrogram had varying frequency and amplitude characteristics to mimic real-world radar returns. The model was trained for 15 epochs with a batch size of 8, using the Adam optimizer and a learning rate of 0.001. The training process included data augmentation techniques that are relevant to Doppler spectrograms, such as random rotation and flipping, to improve the model's robustness. The input image size was `224 x 224`.
 
 The following figure shows the training and validation accuracy over epochs, demonstrating the model's learning curve.
 
 ![CNN model loss and accuracy vs epochs](out/cnn_training_metrics.png)
-<p align="center"><strong>Figure 2:</strong> Model Accuracy vs Epochs for CNN Classifier</p>
+<p align="center"><strong>Figure 3:</strong> Model Accuracy vs Epochs for CNN Classifier</p>
 
 A baseline Resnet (resnet-18) was also trained to compare the results relative to the trained CNN.
 
 ![Resnet model loss and accuracy vs epochs](out/resnet_training_metrics.png)
- <p align="center"><strong>Figure 3:</strong> Model Accuracy vs Epochs for Resnet18 Classifier</p>
+ <p align="center"><strong>Figure 4:</strong> Model Accuracy vs Epochs for Resnet18 Classifier</p>
 
 After training both models on the same dataset, we used a newly generated test set to evaluate their performance. The test set consisted of 50 samples per class, ensuring a balanced evaluation across all classes. The models were evaluated using metrics such as accuracy, F1 score, precision, and recall. The confusion matrix was also generated to visualize the model's performance across different classes.
 
@@ -96,12 +99,12 @@ To visualize and interpret the model's decisions, Grad-CAM was used to generate 
 The custom CNN model achieved  an F1 score of 0.986, precision of 0.987, and recall of 0.987. The confusion matrix below shows the model's performance across different classes, indicating that the model is highly effective at distinguishing between bird flocks, drone swarms, and stealth UAVs.
 
 ![Confusion matrix for CNN classifier](out/cnn_confusion_matrix.png)
-<p align="center"><strong>Figure 4:</strong> CNN classifier metrics vs Noise Level</p>
+<p align="center"><strong>Figure 5:</strong> CNN classifier metrics vs Noise Level</p>
 
 The Resnet model achieved an F1 score of 0.814, precision of 0.866, and recall of 0.820. The confusion matrix below shows the model's performance across different classes, indicating that the model is relatively less effective at distinguishing between bird flocks and other classes (i.e. drone swarms, and stealth UAVs).
 
 ![Confusion matrix for Resnet classifier](out/resnet_confusion_matrix.png)
-<p align="center"><strong>Figure 5:</strong> Resnet classifier metrics vs Noise Level</p>
+<p align="center"><strong>Figure 6:</strong> Resnet classifier metrics vs Noise Level</p>
 
 Thus, the deduction from this finding is that the custom CNN model outperforms the Resnet baseline in terms of F1 score, precision, and recall. The custom CNN is more effective at distinguishing between the three classes, especially under noisy conditions. A potential reason for this could be the custom architecture's ability to focus on relevant features in the spectrograms, while the Resnet model may have been too complex for the dataset, leading to overfitting. This is also apparent from the high validation accuracy and low F1 score. 
 
@@ -109,10 +112,10 @@ Both models were then tested with noisy parameters with a newly generated test s
 
 
 ![CNN model accuracy vs noise level](out/cnn_metrics_plot.png)
- <p align="center"><strong>Figure 6:</strong> CNN classifier metrics vs Noise Level</p>
+ <p align="center"><strong>Figure 7:</strong> CNN classifier metrics vs Noise Level</p>
 
 ![Resnet accuracy vs noise level](out/resnet_metrics_plot.png)
-<p align="center"><strong>Figure 7:</strong> Resnet 18 metrics vs Noise Level</p>
+<p align="center"><strong>Figure 8:</strong> Resnet 18 metrics vs Noise Level</p>
 For the custom CNN model, the accuracy dropped from 0.986 to 0.878 at noise level 1.5, while the Resnet model dropped from 0.82 to 0.72 showing that the custom CNN is more robust to noise compared to the Resnet model. 
 
 This indicates that the custom CNN model works particularly well even under high noise conditions. The custom CNN's architecture, with its fewer parameters and simpler design, allows it to generalize better under noisy conditions, while the Resnet model's complexity leads to a more significant drop in performance.
@@ -131,7 +134,7 @@ For simpler inference, with no noise introduced to the test sample. It can be se
 </p>
 
 <p align="center">
-  <b>Figure 8:</b> Grad-CAM visualization for all classes (Bird Flocks, Drone Swarm, Stealth UAV)
+  <b>Figure 9:</b> Grad-CAM visualization for all classes (Bird Flocks, Drone Swarm, Stealth UAV)
 </p>
 
 These visualizations show that the CNN classifier is focusing on the right regions of the spectrogram to understand what the class is actually showing. 
@@ -146,7 +149,7 @@ For higher noise levels, the CNN looks in similar positions, but due to high SNR
 </p>
 
 <p align="center">
-  <b>Figure 9:</b> Grad-CAM visualization for all classes under higher noise(Bird Flack, Drone Swarm, Stealth UAV)
+  <b>Figure 10:</b> Grad-CAM visualization for all classes under higher noise(Bird Flock, Drone Swarm, Stealth UAV)
 </p>
 
 The key takeaway from these visualizations is that the CNN model is able to focus on the relevant features in the spectrograms, even under noisy conditions. This is crucial for building trust in AI systems, especially in safety-critical applications like radar detection.
