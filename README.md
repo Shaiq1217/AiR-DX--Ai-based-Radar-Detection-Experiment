@@ -70,7 +70,7 @@ The project was tested using a synthetic dataset of Doppler spectrograms generat
 
 The model architecture consists of four convolutional layers, each followed by ReLU activation. The final layer is a fully connected layer that outputs the class probabilities. The model was designed to be lightweight, with only ~6 million parameters and is only ~7MB in size making it a strong candidate for deployment on edge devices. The model architecture is shown below:
 
-<div align="center">
+<div style="text-align: center;">
   <figure>
     <img src="out/model-arch/nn.svg" alt="CNN model architecture">
     <figcaption><strong>Figure 1:</strong> CNN Model architecture</figcaption>
@@ -80,7 +80,7 @@ Each simulated spectrogram had varying frequency and amplitude characteristics t
 
 The following figure shows the training and validation accuracy over epochs, demonstrating the model's learning curve.
 
-<div align="center">
+<div style="text-align: center;">
   <figure>
     <img src="out/cnn_training_metrics.png" alt="CNN model loss and accuracy vs epochs" width="600">
     <figcaption><strong>Figure 2:</strong> Model Accuracy vs Epochs for CNN Classifier</figcaption>
@@ -88,8 +88,8 @@ The following figure shows the training and validation accuracy over epochs, dem
 </div>
 
 A baseline Resnet (resnet-18) was also trained to compare the results relative to the trained CNN.
-<div align="center">
-  <figure align="center">
+<div style="text-align: center;">
+  <figure>
     <img src="out/resnet_training_metrics.png" alt="Resnet model loss and accuracy vs epochs" width="600">
     <figcaption><strong>Figure 3:</strong> Model Accuracy vs Epochs for Resnet18 Classifier</figcaption>
   </figure>
@@ -104,16 +104,16 @@ To visualize and interpret the model's decisions, Grad-CAM was used to generate 
 ### Results 
 
 The custom CNN model achieved  an F1 score of 0.986, precision of 0.987, and recall of 0.987. The confusion matrix below shows the model's performance across different classes, indicating that the model is highly effective at distinguishing between bird flocks, drone swarms, and stealth UAVs.
-<div align="center">
-  <figure align="center">
+<div style="text-align: center;">
+  <figure>
     <img src="out/cnn_confusion_matrix.png" alt="Confusion matrix for CNN classifier" width="600">
     <figcaption><strong>Figure 4:</strong> CNN classifier metrics vs Noise Level</figcaption>
   </figure>
 </div>
 
 The Resnet model achieved an F1 score of 0.814, precision of 0.866, and recall of 0.820. The confusion matrix below shows the model's performance across different classes, indicating that the model is relatively less effective at distinguishing between bird flocks and other classes (i.e. drone swarms, and stealth UAVs).
-<div align="center">
-<figure align="center">
+<div style="text-align: center;">
+<figure>
   <img src="out/resnet_confusion_matrix.png" alt="Confusion matrix for CNN classifier" width="600">
   <figcaption><strong>Figure 5:</strong> Resnet classifier metrics vs Noise Level</figcaption>
 </figure>
@@ -122,14 +122,14 @@ The Resnet model achieved an F1 score of 0.814, precision of 0.866, and recall o
 Thus, the deduction from this finding is that the custom CNN model outperforms the Resnet baseline in terms of F1 score, precision, and recall. The custom CNN is more effective at distinguishing between the three classes, especially under noisy conditions. A potential reason for this could be the custom architecture's ability to focus on relevant features in the spectrograms, while the Resnet model may have been too complex for the dataset, leading to overfitting. This is also apparent from the high validation accuracy and low F1 score. 
 
 Both models were then tested with noisy parameters with a newly generated test set. The loss in accuracy over the increase in the noise is shown in the figure below.
-<div align="center">
-<figure align="center">
+<div style="text-align: center;">
+<figure>
   <img src="out/cnn_metrics_plot.png" alt="Model accuracy vs noise level" width="600">
   <figcaption><strong>Figure 6:</strong> CNN classifier metrics vs Noise Level</figcaption>
 </figure>
 </div>
-<div align="center">
-<figure align="center">
+<div style="text-align: center;">
+<figure>
   <img src="out/resnet_metrics_plot.png" alt="Model accuracy vs noise level" width="600">
   <figcaption><strong>Figure 7:</strong> Resnet 18 metrics vs Noise Level</figcaption>
 </figure>
