@@ -70,13 +70,13 @@ The project was tested using a synthetic dataset of Doppler spectrograms generat
 
 The model architecture consists of four convolutional layers, each followed by ReLU activation. The final layer is a fully connected layer that outputs the class probabilities. The model was designed to be lightweight, with only ~6 million parameters and is only ~7MB in size making it a strong candidate for deployment on edge devices. The model architecture is shown below:
 
-
-<figure align="center">
+<div align="center">
+<figure >
   <img src="out/model-arch/nn.svg" alt="CNN model architecture">
   <figcaption><strong>Figure 1:</strong> CNN Model architecture</figcaption>
 </figure>
 
-
+</div>
 Each simulated spectrogram had varying frequency and amplitude characteristics to mimic real-world radar returns. The model was trained for 15 epochs with a batch size of 8, using the Adam optimizer and a learning rate of 0.001. The training process included data augmentation techniques that are relevant to Doppler spectrograms, such as random rotation and flipping, to improve the model's robustness. The input image size was `224 x 224`.
 
 The following figure shows the training and validation accuracy over epochs, demonstrating the model's learning curve.
@@ -105,13 +105,13 @@ The custom CNN model achieved  an F1 score of 0.986, precision of 0.987, and rec
 <figure align="center">
   <img src="out/cnn_confusion_matrix.png" alt="Confusion matrix for CNN classifier" width="600">
   <figcaption><strong>Figure 4:</strong> CNN classifier metrics vs Noise Level</figcaption>
-</figure
+</figure>
 
 The Resnet model achieved an F1 score of 0.814, precision of 0.866, and recall of 0.820. The confusion matrix below shows the model's performance across different classes, indicating that the model is relatively less effective at distinguishing between bird flocks and other classes (i.e. drone swarms, and stealth UAVs).
 <figure align="center">
   <img src="out/resnet_confusion_matrix.png" alt="Confusion matrix for CNN classifier" width="600">
   <figcaption><strong>Figure 5:</strong> Resnet classifier metrics vs Noise Level</figcaption>
-</figure
+</figure>
 
 
 Thus, the deduction from this finding is that the custom CNN model outperforms the Resnet baseline in terms of F1 score, precision, and recall. The custom CNN is more effective at distinguishing between the three classes, especially under noisy conditions. A potential reason for this could be the custom architecture's ability to focus on relevant features in the spectrograms, while the Resnet model may have been too complex for the dataset, leading to overfitting. This is also apparent from the high validation accuracy and low F1 score. 
