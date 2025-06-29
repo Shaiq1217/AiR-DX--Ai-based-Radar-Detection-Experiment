@@ -1,11 +1,14 @@
 from src.data_loader import get_dataloader, get_resnet_data_loader
 from src.model import SimpleCNN
 from src.training import train_model
-from src.inference import run_inferece
+from src.inference import run_inferece, get_test_loader, run_gradcam
 from src.generate_spectrograms import generate
 from src.resnet import ResnetModel
-from src.utils import plot_metrics
 import torch
+from torchsummary import summary
+import matplotlib.pyplot as plt
+from glob import glob
+import os
 
 def training_loop():
     # Generate simulated spectrograms 
@@ -54,11 +57,23 @@ def inference(num_samples = 50):
         run_inferece(model_resnet_test, device=device, noise_multiplier=multiplier,
                     confusion_matrix_path=f"out/resnet_confusion_matrix_noise_{multiplier}.png", metrics_path="out/resnet_metrics_noise.csv", num_channels=3)
 
-
+def grad_cam(out_dir = './test_gradcam/',
+    num_samples = 5, gradcam_out = 'out/gradcam_cnn', noise_multiplier = 1.0):
+    #Test with gradcam
+    generate(path=out_dir, samples=num_samples)
+    print(f"[✓] Generated test set")
+    test_loader, classes = get_test_loader(path= out_dir, num_channels=1)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model_cnn_test = SimpleCNN(num_classes=3)  # Adjust num_classes if needed
+    model_cnn_test.load_state_dict(torch.load("out/cnn_best_weights.pth", map_location=device))
+    model_cnn_test.to(device)
+    print(f"[✓] Loaded model")
+    # run through gradcam function
+    run_gradcam(model_cnn_test, 'cpu', 1, test_loader, classes, noise_multiplier=noise_multiplier, gradcam_output_dir=f"{gradcam_out}_noise_{noise_multiplier}")
 
 def main():
-    #Increase noise in test set
     inference()
+
 
 if __name__ == "__main__":
     main()
