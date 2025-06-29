@@ -71,27 +71,29 @@ The project was tested using a synthetic dataset of Doppler spectrograms generat
 The model architecture consists of four convolutional layers, each followed by ReLU activation. The final layer is a fully connected layer that outputs the class probabilities. The model was designed to be lightweight, with only ~6 million parameters and is only ~7MB in size making it a strong candidate for deployment on edge devices. The model architecture is shown below:
 
 <div align="center">
-<figure >
-  <img src="out/model-arch/nn.svg" alt="CNN model architecture">
-  <figcaption><strong>Figure 1:</strong> CNN Model architecture</figcaption>
-</figure>
-
+  <figure>
+    <img src="out/model-arch/nn.svg" alt="CNN model architecture">
+    <figcaption><strong>Figure 1:</strong> CNN Model architecture</figcaption>
+  </figure>
 </div>
 Each simulated spectrogram had varying frequency and amplitude characteristics to mimic real-world radar returns. The model was trained for 15 epochs with a batch size of 8, using the Adam optimizer and a learning rate of 0.001. The training process included data augmentation techniques that are relevant to Doppler spectrograms, such as random rotation and flipping, to improve the model's robustness. The input image size was `224 x 224`.
 
 The following figure shows the training and validation accuracy over epochs, demonstrating the model's learning curve.
 
-
-<figure align="center">
-  <img src="out/cnn_training_metrics.png" alt="CNN model loss and accuracy vs epochs" width="600">
-  <figcaption><strong>Figure 2:</strong> Model Accuracy vs Epochs for CNN Classifier</figcaption>
-</figure>
+<div align="center">
+  <figure>
+    <img src="out/cnn_training_metrics.png" alt="CNN model loss and accuracy vs epochs" width="600">
+    <figcaption><strong>Figure 2:</strong> Model Accuracy vs Epochs for CNN Classifier</figcaption>
+  </figure>
+</div>
 
 A baseline Resnet (resnet-18) was also trained to compare the results relative to the trained CNN.
-<figure align="center">
-  <img src="out/resnet_training_metrics.png" alt="Resnet model loss and accuracy vs epochs" width="600">
-  <figcaption><strong>Figure 3:</strong> Model Accuracy vs Epochs for Resnet18 Classifier</figcaption>
-</figure>
+<div align="center">
+  <figure align="center">
+    <img src="out/resnet_training_metrics.png" alt="Resnet model loss and accuracy vs epochs" width="600">
+    <figcaption><strong>Figure 3:</strong> Model Accuracy vs Epochs for Resnet18 Classifier</figcaption>
+  </figure>
+</div>
 
 After training both models on the same dataset, we used a newly generated test set to evaluate their performance. The test set consisted of 50 samples per class, ensuring a balanced evaluation across all classes. The models were evaluated using metrics such as accuracy, F1 score, precision, and recall. The confusion matrix was also generated to visualize the model's performance across different classes.
 
@@ -102,31 +104,36 @@ To visualize and interpret the model's decisions, Grad-CAM was used to generate 
 ### Results 
 
 The custom CNN model achieved  an F1 score of 0.986, precision of 0.987, and recall of 0.987. The confusion matrix below shows the model's performance across different classes, indicating that the model is highly effective at distinguishing between bird flocks, drone swarms, and stealth UAVs.
-<figure align="center">
-  <img src="out/cnn_confusion_matrix.png" alt="Confusion matrix for CNN classifier" width="600">
-  <figcaption><strong>Figure 4:</strong> CNN classifier metrics vs Noise Level</figcaption>
-</figure>
+<div align="center">
+  <figure align="center">
+    <img src="out/cnn_confusion_matrix.png" alt="Confusion matrix for CNN classifier" width="600">
+    <figcaption><strong>Figure 4:</strong> CNN classifier metrics vs Noise Level</figcaption>
+  </figure>
+</div>
 
 The Resnet model achieved an F1 score of 0.814, precision of 0.866, and recall of 0.820. The confusion matrix below shows the model's performance across different classes, indicating that the model is relatively less effective at distinguishing between bird flocks and other classes (i.e. drone swarms, and stealth UAVs).
+<div align="center">
 <figure align="center">
   <img src="out/resnet_confusion_matrix.png" alt="Confusion matrix for CNN classifier" width="600">
   <figcaption><strong>Figure 5:</strong> Resnet classifier metrics vs Noise Level</figcaption>
 </figure>
-
+</div>
 
 Thus, the deduction from this finding is that the custom CNN model outperforms the Resnet baseline in terms of F1 score, precision, and recall. The custom CNN is more effective at distinguishing between the three classes, especially under noisy conditions. A potential reason for this could be the custom architecture's ability to focus on relevant features in the spectrograms, while the Resnet model may have been too complex for the dataset, leading to overfitting. This is also apparent from the high validation accuracy and low F1 score. 
 
 Both models were then tested with noisy parameters with a newly generated test set. The loss in accuracy over the increase in the noise is shown in the figure below.
+<div align="center">
 <figure align="center">
   <img src="out/cnn_metrics_plot.png" alt="Model accuracy vs noise level" width="600">
   <figcaption><strong>Figure 6:</strong> CNN classifier metrics vs Noise Level</figcaption>
 </figure>
-
+</div>
+<div align="center">
 <figure align="center">
   <img src="out/resnet_metrics_plot.png" alt="Model accuracy vs noise level" width="600">
   <figcaption><strong>Figure 7:</strong> Resnet 18 metrics vs Noise Level</figcaption>
 </figure>
-
+</div>
 For the custom CNN model, the accuracy dropped from 0.986 to 0.878 at noise level 1.5, while the Resnet model dropped from 0.82 to 0.72 showing that the custom CNN is more robust to noise compared to the Resnet model. 
 
 This indicates that the custom CNN model works particularly well even under high noise conditions. The custom CNN's architecture, with its fewer parameters and simpler design, allows it to generalize better under noisy conditions, while the Resnet model's complexity leads to a more significant drop in performance.
@@ -189,5 +196,4 @@ This project is a starting point for building more robust radar detection system
   - Applying similar approaches to other signal processing tasks, such as CIR in wireless communication or audio classification.
 
 ### Reach Out 
-If you have any questions, suggestions, or feedback, feel free to reach out:
-<a href="mail">
+If you have any questions, suggestions, or feedback, feel free to reach out <a href="mailto:shaiq.e.mustafa@gmail.com">here</a>
