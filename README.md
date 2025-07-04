@@ -1,6 +1,6 @@
 # MLR-Dx: Machine Learning based Radar Detection Experiment  
 
-**AiR-Dx** is a lightweight, noise-resilient convolutional neural network (CNN) framework for classifying radar Doppler spectrograms of airborne objects such as:
+**MLR-Dx** is a lightweight, noise-resilient convolutional neural network (CNN) framework for classifying radar Doppler spectrograms of airborne objects such as:
 - 🐦 Bird Flocks
 - ✈️ Drone Swarms
 - 🛸 Stealth UAVs
